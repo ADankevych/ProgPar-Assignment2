@@ -1,4 +1,5 @@
 #include <iostream>
+using namespace std;
 
 void One();
 void Two();
@@ -14,25 +15,25 @@ FILE *loadingFile;
 
 int main()
 {
-    printf("Hello, World!\n");
+    cout<<"Hello, World!\n";
 
     techFile = fopen("file.txt", "w");
     fclose(techFile);
 
-    printf("1 - Append text symbols to the end \n"
-           "2 - Start the new line \n"
-           "3 - Use files to saving the information \n"
-           "4 - Use files to loading the information \n"
-           "5 - Print the current text to console \n"
-           "6 - Insert the text by line and symbol index \n"
-           "7 - Search \n"
-           "8 - exit \n");
+    cout<<"1 - Append text symbols to the end \n"
+        <<"2 - Start the new line \n"
+        <<"3 - Use files to saving the information \n"
+        <<"4 - Use files to loading the information \n"
+        <<"5 - Print the current text to console \n"
+        <<"6 - Insert the text by line and symbol index \n"
+        <<"7 - Search \n"
+        <<"8 - exit \n";
 
 
     int optionNumber;
     while (true) {
-        printf("Please, choose the command\n");
-        scanf("%d",&optionNumber);
+        cout<<"Please, choose the command\n";
+        cin>>optionNumber;
 
         switch (optionNumber) {
             case 1:
@@ -59,7 +60,7 @@ int main()
             case 8:
                 return 0;
             default:
-                printf("The command is not implemented\n");
+                cout<<"The command is not implemented\n";
                 break;
         }
     }
@@ -68,7 +69,7 @@ int main()
 
 
 void One() {
-    printf("Enter text to append: \n");
+    cout<<"Enter text to append: \n";
     techFile = fopen("file.txt", "a");
     char userInput;
     getchar();
@@ -83,16 +84,16 @@ void One() {
 }
 
 void Two() {
-    printf("New line is started \n");
+    cout<<"New line is started \n";
     techFile = fopen("file.txt", "a");
     fprintf(techFile, "\n");
     fclose(techFile);
 }
 
 void Three() {
-    printf("Enter the file name for saving (not more 20 symbols): \n");
+    cout<<"Enter the file name for saving (not more 20 symbols): \n";
     char filePath[21];
-    scanf("%20s", filePath);
+    cin>>filePath;
 
     savingFile = fopen(filePath, "a");
     techFile = fopen("file.txt", "r");
@@ -112,9 +113,9 @@ void Three() {
 }
 
 void Four() {
-    printf("Enter the file name for loading: \n");
+    cout<<"Enter the file name for loading: \n";
     char filePath[21];
-    scanf("%20s", filePath);
+    cin>>filePath;
     techFile = fopen("file.txt", "a");
     loadingFile = fopen(filePath, "r");
     char symbol;
@@ -133,17 +134,17 @@ void Five() {
     techFile = fopen("file.txt", "r");
     char c;
     while ((c = getc(techFile)) != EOF) {
-        printf("%c", c);
+        cout<<c;
     }
-    printf("\n");
+    cout<<endl;
     fclose(techFile);
 }
 
 void Six() {
-    printf("Choose line and index to insert text: \n");
+    cout<<"Choose line and index to insert text: \n";
     int line;
     int index;
-    scanf("%d %d", &line, &index);
+    cin>>line>>index;
     getchar();
 
     techFile = fopen("file.txt", "r");
@@ -176,7 +177,7 @@ void Six() {
         counter1++;
     }
 
-    printf("Enter the text to insert: \n");
+    cout<<"Enter the text to insert: \n";
     char *userInput = (char *) malloc(100 * sizeof(char));
     fgets(userInput, 100, stdin);
     int userInputSize = strlen(userInput);
@@ -213,7 +214,7 @@ void Six() {
 }
 
 void Seven() {
-    printf("Enter the text to search: \n");
+    cout<<"Enter the text to search: \n";
     getchar();
     char *searchText = (char *) malloc(100 * sizeof(char));
     fgets(searchText, 100, stdin);
@@ -248,7 +249,7 @@ void Seven() {
                 lineNumber++;
             }
         }
-        printf("%d %d\n", lineNumber + 1, index);
+        cout<<lineNumber + 1<<index<<endl;
     }
 
     free(searchText);
