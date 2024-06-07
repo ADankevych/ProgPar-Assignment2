@@ -1,13 +1,20 @@
 #include <iostream>
 using namespace std;
 
-void One();
-void Two();
-void Three();
-void Four();
-void Five();
-void Six();
-void Seven();
+void AppendText();
+void NewLine();
+void SaveTo();
+void LoadFrom();
+void CurrentText();
+void InsertText();
+void Search();
+void Delete();
+void Copy();
+void Cut();
+void Paste();
+void Undo();
+void Redo();
+void Replace();
 
 FILE *techFile;
 FILE *savingFile;
@@ -27,7 +34,14 @@ int main()
         <<"5 - Print the current text to console \n"
         <<"6 - Insert the text by line and symbol index \n"
         <<"7 - Search \n"
-        <<"8 - exit \n";
+        <<"8 - Delete \n"
+        <<"9 - Copy \n"
+        <<"10 - Cut \n"
+        <<"11 - Paste \n"
+        <<"12 - Undo \n"
+        <<"13 - Redo \n"
+        <<"14 - Replace \n"
+        <<"15 - exit \n";
 
 
     int optionNumber;
@@ -37,27 +51,48 @@ int main()
 
         switch (optionNumber) {
             case 1:
-                One();
+                AppendText();
                 break;
             case 2:
-                Two();
+                NewLine();
                 break;
             case 3:
-                Three();
+                SaveTo();
                 break;
             case 4:
-                Four();
+                LoadFrom();
                 break;
             case 5:
-                Five();
+                CurrentText();
                 break;
             case 6:
-                Six();
+                InsertText();
                 break;
             case 7:
-                Seven();
+                Search();
                 break;
             case 8:
+                Delete();
+                break;
+            case 9:
+                Copy();
+                break;
+            case 10:
+                Cut();
+                break;
+            case 11:
+                Paste();
+                break;
+            case 12:
+                Undo();
+                break;
+            case 13:
+                Redo();
+                break;
+            case 14:
+                Replace();
+                break;
+            case 15:
                 return 0;
             default:
                 cout<<"The command is not implemented\n";
@@ -68,7 +103,7 @@ int main()
 }
 
 
-void One() {
+void AppendText() {
     cout<<"Enter text to append: \n";
     techFile = fopen("file.txt", "a");
     char userInput;
@@ -83,14 +118,14 @@ void One() {
     fclose(techFile);
 }
 
-void Two() {
+void NewLine() {
     cout<<"New line is started \n";
     techFile = fopen("file.txt", "a");
     fprintf(techFile, "\n");
     fclose(techFile);
 }
 
-void Three() {
+void SaveTo() {
     cout<<"Enter the file name for saving (not more 20 symbols): \n";
     char filePath[21];
     cin>>filePath;
@@ -112,7 +147,7 @@ void Three() {
     fclose(techFile);
 }
 
-void Four() {
+void LoadFrom() {
     cout<<"Enter the file name for loading: \n";
     char filePath[21];
     cin>>filePath;
@@ -130,7 +165,7 @@ void Four() {
     fclose(techFile);
 }
 
-void Five() {
+void CurrentText() {
     techFile = fopen("file.txt", "r");
     char c;
     while ((c = getc(techFile)) != EOF) {
@@ -140,7 +175,7 @@ void Five() {
     fclose(techFile);
 }
 
-void Six() {
+void InsertText() {
     cout<<"Choose line and index to insert text: \n";
     int line;
     int index;
@@ -213,7 +248,7 @@ void Six() {
     free(newFileContent);
 }
 
-void Seven() {
+void Search() {
     cout<<"Enter the text to search: \n";
     getchar();
     char *searchText = (char *) malloc(100 * sizeof(char));
@@ -240,16 +275,18 @@ void Seven() {
 
     char *lineBuffer = (char *) malloc(100 * sizeof(char));
     int lineNumber = 0;
-
+    int currentIndex = 0;
     char *pos = strstr(fileContent, searchText);
     if (pos != NULL) {
         int index = pos - fileContent;
         for (int i = 0; i < index; i++) {
             if (fileContent[i] == '\n') {
                 lineNumber++;
+                currentIndex = 0;
             }
+            currentIndex++;
         }
-        cout<<lineNumber + 1<<index<<endl;
+        cout<<lineNumber + 1<<currentIndex + 1<<endl;
     }
 
     free(searchText);
