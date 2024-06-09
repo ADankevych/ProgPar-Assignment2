@@ -1,11 +1,6 @@
 #include <iostream>
 using namespace std;
 
-void AppendText();
-void NewLine();
-void SaveTo();
-void LoadFrom();
-void CurrentText();
 void InsertText();
 void Search();
 void Delete();
@@ -19,6 +14,88 @@ void Replace();
 FILE *techFile;
 FILE *savingFile;
 FILE *loadingFile;
+
+class Append {
+public:
+
+    static void AppendText() {
+        cout<<"Enter text to append: \n";
+        techFile = fopen("file.txt", "a");
+        char userInput;
+        getchar();
+        while(true) {
+            userInput = getchar();
+            if (userInput == '\n') {
+                break;
+            }
+            fprintf(techFile, "%c", userInput);
+        }
+        fclose(techFile);
+    }
+
+    static void NewLine() {
+        cout<<"New line is started \n";
+        techFile = fopen("file.txt", "a");
+        fprintf(techFile, "\n");
+        fclose(techFile);
+    }
+
+    static void CurrentText() {
+        techFile = fopen("file.txt", "r");
+        char c;
+        while ((c = getc(techFile)) != EOF) {
+            cout<<c;
+        }
+        cout<<endl;
+        fclose(techFile);
+    }
+
+};
+
+class SaveLoad {
+public:
+
+    static void SaveTo() {
+        cout<<"Enter the file name for saving (not more 20 symbols): \n";
+        char filePath[21];
+        cin>>filePath;
+
+        savingFile = fopen(filePath, "a");
+        techFile = fopen("file.txt", "r");
+        char symbol;
+        while (true) {
+            symbol = fgetc(techFile);
+            if (symbol == EOF) {
+                break;
+            }
+            fputc(symbol, savingFile);
+        }
+        fclose(savingFile);
+        fclose(techFile);
+
+        techFile = fopen("file.txt", "w"); // просто очистити файл
+        fclose(techFile);
+    }
+
+    static void LoadFrom() {
+        cout<<"Enter the file name for loading: \n";
+        char filePath[21];
+        cin>>filePath;
+        techFile = fopen("file.txt", "a");
+        loadingFile = fopen(filePath, "r");
+        char symbol;
+        while (true) {
+            symbol = fgetc(loadingFile);
+            if (symbol == EOF) {
+                break;
+            }
+            fputc(symbol, techFile);
+        }
+        fclose(loadingFile);
+        fclose(techFile);
+    }
+};
+
 
 int main()
 {
@@ -51,19 +128,19 @@ int main()
 
         switch (optionNumber) {
             case 1:
-                AppendText();
+                Append::AppendText();
                 break;
             case 2:
-                NewLine();
+                Append::NewLine();
                 break;
             case 3:
-                SaveTo();
+                SaveLoad::SaveTo();
                 break;
             case 4:
-                LoadFrom();
+                SaveLoad::LoadFrom();
                 break;
             case 5:
-                CurrentText();
+                Append::CurrentText();
                 break;
             case 6:
                 InsertText();
@@ -103,77 +180,6 @@ int main()
 }
 
 
-void AppendText() {
-    cout<<"Enter text to append: \n";
-    techFile = fopen("file.txt", "a");
-    char userInput;
-    getchar();
-    while(true) {
-        userInput = getchar();
-        if (userInput == '\n') {
-            break;
-        }
-        fprintf(techFile, "%c", userInput);
-    }
-    fclose(techFile);
-}
-
-void NewLine() {
-    cout<<"New line is started \n";
-    techFile = fopen("file.txt", "a");
-    fprintf(techFile, "\n");
-    fclose(techFile);
-}
-
-void SaveTo() {
-    cout<<"Enter the file name for saving (not more 20 symbols): \n";
-    char filePath[21];
-    cin>>filePath;
-
-    savingFile = fopen(filePath, "a");
-    techFile = fopen("file.txt", "r");
-    char symbol;
-    while (true) {
-        symbol = fgetc(techFile);
-        if (symbol == EOF) {
-            break;
-        }
-        fputc(symbol, savingFile);
-    }
-    fclose(savingFile);
-    fclose(techFile);
-
-    techFile = fopen("file.txt", "w"); // просто очистити файл
-    fclose(techFile);
-}
-
-void LoadFrom() {
-    cout<<"Enter the file name for loading: \n";
-    char filePath[21];
-    cin>>filePath;
-    techFile = fopen("file.txt", "a");
-    loadingFile = fopen(filePath, "r");
-    char symbol;
-    while (true) {
-        symbol = fgetc(loadingFile);
-        if (symbol == EOF) {
-            break;
-        }
-        fputc(symbol, techFile);
-    }
-    fclose(loadingFile);
-    fclose(techFile);
-}
-
-void CurrentText() {
-    techFile = fopen("file.txt", "r");
-    char c;
-    while ((c = getc(techFile)) != EOF) {
-        cout<<c;
-    }
-    cout<<endl;
-    fclose(techFile);
-}
 
 void InsertText() {
     cout<<"Choose line and index to insert text: \n";
