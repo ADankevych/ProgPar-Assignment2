@@ -3,11 +3,8 @@ using namespace std;
 
 char* globalCopiedText = nullptr;
 
-void InsertText();
-void Search();
 void Undo();
 void Redo();
-void Replace();
 
 FILE *techFile;
 FILE *savingFile;
@@ -353,6 +350,203 @@ public:
     }
 };
 
+class InsertReplaceSearch {
+public:
+    static void InsertText() {
+        cout<<"Choose line and index to insert text: \n";
+        int line;
+        int index;
+        cin>>line>>index;
+        getchar();
+
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        char *fileContent = (char *) malloc((fileSize+1) * sizeof(char));
+        techFile = fopen("file.txt", "r");
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+        fclose(techFile);
+
+        int lineCounter = 0;
+        int indexCounter = 0;
+        int counter1 = 0;
+        while (fileContent[counter1] != '\0') {
+            if (lineCounter == line && indexCounter == index) {
+                break;
+            }
+            if (fileContent[counter1] == '\n') {
+                lineCounter++;
+                indexCounter = 0;
+            } else {
+                indexCounter++;
+            }
+            counter1++;
+        }
+
+        cout<<"Enter the text to insert: \n";
+        char *userInput = (char *) malloc(100 * sizeof(char));
+        fgets(userInput, 100, stdin);
+        int userInputSize = strlen(userInput);
+
+        if (userInput[userInputSize - 1] == '\n') {
+            userInput[userInputSize - 1] = '\0';
+            userInputSize--;
+        }
+
+        int newFileSize = fileSize + userInputSize;
+        char *newFileContent = (char *)malloc((newFileSize + 1) * sizeof(char));
+        int counter2 = 0;
+        for (int i = 0; i < counter1; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        for (int i = 0; i < userInputSize; i++) {
+            newFileContent[counter2] = userInput[i];
+            counter2++;
+        }
+        for (int i = counter1; i < fileSize; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        newFileContent[newFileSize] = '\0';
+
+        techFile = fopen("file.txt", "w");
+        fputs(newFileContent, techFile);
+        fclose(techFile);
+
+        free(fileContent);
+        free(userInput);
+        free(newFileContent);
+    }
+
+    static void Replace(){
+        cout<<"Choose line and index: \n";
+        int line;
+        int index;
+        cin>>line>>index;
+        getchar();
+
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
+        techFile = fopen("file.txt", "r");
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+        fclose(techFile);
+
+        int lineCounter = 0;
+        int indexCounter = 0;
+        int counter1 = 0;
+        while (fileContent[counter1] != '\0') {
+            if (lineCounter == line && indexCounter == index) {
+                break;
+            }
+            if (fileContent[counter1] == '\n') {
+                lineCounter++;
+                indexCounter = 0;
+            } else {
+                indexCounter++;
+            }
+            counter1++;
+        }
+
+        cout<<"Enter the text to replace: \n";
+        char *userInput = (char *) malloc(100 * sizeof(char));
+        fgets(userInput, 100, stdin);
+        int userInputSize = strlen(userInput);
+
+        if (userInput[userInputSize - 1] == '\n') {
+            userInput[userInputSize - 1] = '\0';
+            userInputSize--;
+        }
+
+        int newFileSize = fileSize - 1 + userInputSize;
+        char *newFileContent = (char *) malloc((newFileSize + 1) * sizeof(char));
+        int counter2 = 0;
+        for (int i = 0; i < counter1; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        for (int i = 0; i < userInputSize; i++) {
+            newFileContent[counter2] = userInput[i];
+            counter2++;
+        }
+        for (int i = counter2; i < fileSize; i++) {
+            newFileContent[i] = fileContent[i];
+        }
+
+        newFileContent[newFileSize] = '\0';
+
+        techFile = fopen("file.txt", "w");
+        fputs(newFileContent, techFile);
+        fclose(techFile);
+
+        free(fileContent);
+        free(userInput);
+        free(newFileContent);
+    }
+
+    static void Search() {
+        cout<<"Enter the text to search: \n";
+        getchar();
+        char *searchText = (char *) malloc(100 * sizeof(char));
+        fgets(searchText, 100, stdin);
+        int lenInput = strlen(searchText);
+        if (searchText[lenInput - 1] == '\n') {
+            searchText[lenInput - 1] = '\0';
+            lenInput--;
+        }
+
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        techFile = fopen("file.txt", "r");
+        char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
+
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+
+        char *lineBuffer = (char *) malloc(100 * sizeof(char));
+        int lineNumber = 0;
+        int currentIndex = 0;
+        char *pos = strstr(fileContent, searchText);
+        if (pos != NULL) {
+            int index = pos - fileContent;
+            for (int i = 0; i < index; i++) {
+                if (fileContent[i] == '\n') {
+                    lineNumber++;
+                    currentIndex = 0;
+                }
+                currentIndex++;
+            }
+            cout<<lineNumber + 1<<currentIndex + 1<<endl;
+        }
+
+        free(searchText);
+        free(fileContent);
+        free(lineBuffer);
+        fclose(techFile);
+    }
+
+};
+
 int main()
 {
     cout<<"Hello, World!\n";
@@ -399,10 +593,10 @@ int main()
                 Append::CurrentText();
                 break;
             case 6:
-                InsertText();
+                InsertReplaceSearch::InsertText();
                 break;
             case 7:
-                Search();
+                InsertReplaceSearch::Search();
                 break;
             case 8:
                 DeleteCopyCutPaste::Delete();
@@ -423,7 +617,7 @@ int main()
                 Redo();
                 break;
             case 14:
-                Replace();
+                InsertReplaceSearch::Replace();
                 break;
             case 15:
                 free(globalCopiedText);
@@ -437,134 +631,9 @@ int main()
     return 0;
 }
 
-
-
-void InsertText() {
-    cout<<"Choose line and index to insert text: \n";
-    int line;
-    int index;
-    cin>>line>>index;
-    getchar();
-
-    techFile = fopen("file.txt", "r");
-    long fileSize = 0;
-    char symbol;
-    while ((symbol = fgetc(techFile)) != EOF) {
-        fileSize++;
-    }
-    fclose(techFile);
-
-    char *fileContent = (char *) malloc((fileSize+1) * sizeof(char));
-    techFile = fopen("file.txt", "r");
-    fread(fileContent, 1, fileSize, techFile);
-    fileContent[fileSize] = '\0';
-    fclose(techFile);
-
-    int lineCounter = 0;
-    int indexCounter = 0;
-    int counter1 = 0;
-    while (fileContent[counter1] != '\0') {
-        if (lineCounter == line && indexCounter == index) {
-            break;
-        }
-        if (fileContent[counter1] == '\n') {
-            lineCounter++;
-            indexCounter = 0;
-        } else {
-            indexCounter++;
-        }
-        counter1++;
-    }
-
-    cout<<"Enter the text to insert: \n";
-    char *userInput = (char *) malloc(100 * sizeof(char));
-    fgets(userInput, 100, stdin);
-    int userInputSize = strlen(userInput);
-
-    if (userInput[userInputSize - 1] == '\n') {  // треба бо вставе \n після вводу
-        userInput[userInputSize - 1] = '\0';
-        userInputSize--;
-    }
-
-    int newFileSize = fileSize + userInputSize;
-    char *newFileContent = (char *)malloc((newFileSize + 1) * sizeof(char));
-    int counter2 = 0;
-    for (int i = 0; i < counter1; i++) {
-        newFileContent[counter2] = fileContent[i];
-        counter2++;
-    }
-    for (int i = 0; i < userInputSize; i++) {
-        newFileContent[counter2] = userInput[i];
-        counter2++;
-    }
-    for (int i = counter1; i < fileSize; i++) {
-        newFileContent[counter2] = fileContent[i];
-        counter2++;
-    }
-    newFileContent[newFileSize] = '\0';
-
-    techFile = fopen("file.txt", "w");
-    fputs(newFileContent, techFile);
-    fclose(techFile);
-
-    free(fileContent);
-    free(userInput);
-    free(newFileContent);
-}
-
-void Search() {
-    cout<<"Enter the text to search: \n";
-    getchar();
-    char *searchText = (char *) malloc(100 * sizeof(char));
-    fgets(searchText, 100, stdin);
-    int lenInput = strlen(searchText);
-    if (searchText[lenInput - 1] == '\n') {
-        searchText[lenInput - 1] = '\0';
-        lenInput--;
-    }
-
-    techFile = fopen("file.txt", "r");
-    long fileSize = 0;
-    char symbol;
-    while ((symbol = fgetc(techFile)) != EOF) {
-        fileSize++;
-    }
-    fclose(techFile);
-
-    techFile = fopen("file.txt", "r");
-    char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
-
-    fread(fileContent, 1, fileSize, techFile);
-    fileContent[fileSize] = '\0';
-
-    char *lineBuffer = (char *) malloc(100 * sizeof(char));
-    int lineNumber = 0;
-    int currentIndex = 0;
-    char *pos = strstr(fileContent, searchText);
-    if (pos != NULL) {
-        int index = pos - fileContent;
-        for (int i = 0; i < index; i++) {
-            if (fileContent[i] == '\n') {
-                lineNumber++;
-                currentIndex = 0;
-            }
-            currentIndex++;
-        }
-        cout<<lineNumber + 1<<currentIndex + 1<<endl;
-    }
-
-    free(searchText);
-    free(fileContent);
-    free(lineBuffer);
-    fclose(techFile);
-}
-
 void Redo() {
     cout<<"Redo\n";
 }
 void Undo() {
     cout<<"Undo\n";
-}
-void Replace() {
-    cout<<"Replace\n";
 }
