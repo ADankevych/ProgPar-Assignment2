@@ -220,6 +220,74 @@ public:
         int numberOfSymbols;
         cin>>line>>index>>numberOfSymbols;
 
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
+        techFile = fopen("file.txt", "r");
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+        fclose(techFile);
+
+        int lineCounter = 0;
+        int indexCounter = 0;
+        int counter1 = 0;
+
+        while (fileContent[counter1] != '\0') {
+            if (lineCounter == line && indexCounter == index) {
+                break;
+            }
+            if (fileContent[counter1] == '\n') {
+                lineCounter++;
+                indexCounter = 0;
+            } else {
+                indexCounter++;
+            }
+            counter1++;
+        }
+
+        int newFileSize = fileSize - numberOfSymbols;
+        char *newFileContent = (char *) malloc((newFileSize + 1) * sizeof(char));
+        int counter2 = 0;
+        for (int i = 0; i < counter1; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+
+        if (globalCopiedText != nullptr) {
+            free(globalCopiedText);
+            globalCopiedText = nullptr;
+        }
+
+        char *copiedText = (char *) malloc((numberOfSymbols + 1) * sizeof(char));
+        int counter3 = 0;
+        for (int i = counter1; i < counter1 + numberOfSymbols; i++) {
+            copiedText[counter3] = fileContent[i];
+            counter3++;
+        }
+        copiedText[numberOfSymbols] = '\0';
+
+        globalCopiedText = (char *) realloc(globalCopiedText, strlen(copiedText) + 1);
+        strcpy(globalCopiedText, copiedText);
+
+        for (int i = counter1 + numberOfSymbols; i < fileSize; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        newFileContent[newFileSize] = '\0';
+
+        techFile = fopen("file.txt", "w");
+        fputs(newFileContent, techFile);
+        fclose(techFile);
+
+        free(fileContent);
+        free(newFileContent);
+        free(copiedText);
     }
 
     static void Paste(){
