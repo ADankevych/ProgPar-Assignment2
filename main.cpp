@@ -1,12 +1,13 @@
 #include <iostream>
 using namespace std;
 
-char* globalCopiedText = nullptr;
-
-void Undo();
-void Redo();
+char *globalCopiedText = nullptr;
+char *techFilesForSave [3] = {"file1.txt", "file2.txt", "file3.txt"};
+int functions [3] = {0, 0, 0};
+int currentFileIndex = 0;
 
 FILE *techFile;
+FILE *techSaveFile;
 FILE *savingFile;
 FILE *loadingFile;
 
@@ -547,6 +548,47 @@ public:
 
 };
 
+class UndoRedo {
+public:
+    static void Undo() {
+        int index;
+        if (currentFileIndex == 0){
+            index = 1;
+        }
+        else if (currentFileIndex == 1){
+            index = 2;
+        }
+        else if (currentFileIndex == 2){
+            index = 0;
+        }
+
+        techFile = fopen("file.txt", "w");
+        techSaveFile = fopen(techFilesForSave[index], "r");
+        char c;
+        while ((c = getc(techSaveFile)) != EOF) {
+            putc(c, techFile);
+        }
+        fclose(techFile);
+        fclose(techSaveFile);
+    }
+
+    static void Redo() {
+
+    }
+
+};
+
+void RewriteFile() {
+    techFile = fopen("file.txt", "r");
+    techSaveFile = fopen(techFilesForSave[currentFileIndex], "w");
+    char c;
+    while ((c = getc(techFile)) != EOF) {
+        putc(c, techSaveFile);
+    }
+    fclose(techFile);
+    fclose(techSaveFile);
+}
+
 int main()
 {
     cout<<"Hello, World!\n";
@@ -576,12 +618,21 @@ int main()
         cout<<"Please, choose the command\n";
         cin>>optionNumber;
 
+        if (currentFileIndex == 3){
+            currentFileIndex = 0;
+        }
+        RewriteFile();
+
         switch (optionNumber) {
             case 1:
                 Append::AppendText();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 2:
                 Append::NewLine();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 3:
                 SaveLoad::SaveTo();
@@ -591,33 +642,53 @@ int main()
                 break;
             case 5:
                 Append::CurrentText();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 6:
                 InsertReplaceSearch::InsertText();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 7:
                 InsertReplaceSearch::Search();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 8:
                 DeleteCopyCutPaste::Delete();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 9:
                 DeleteCopyCutPaste::Copy();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 10:
                 DeleteCopyCutPaste::Cut();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 11:
                 DeleteCopyCutPaste::Paste();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 12:
-                Undo();
+                UndoRedo::Undo();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 13:
-                Redo();
+                UndoRedo::Redo();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 14:
                 InsertReplaceSearch::Replace();
+                functions[currentFileIndex] = optionNumber;
+                currentFileIndex++;
                 break;
             case 15:
                 free(globalCopiedText);
@@ -629,11 +700,4 @@ int main()
         }
     }
     return 0;
-}
-
-void Redo() {
-    cout<<"Redo\n";
-}
-void Undo() {
-    cout<<"Undo\n";
 }
