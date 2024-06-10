@@ -3,10 +3,6 @@ using namespace std;
 
 void InsertText();
 void Search();
-void Delete();
-void Copy();
-void Cut();
-void Paste();
 void Undo();
 void Redo();
 void Replace();
@@ -96,6 +92,96 @@ public:
     }
 };
 
+class DeleteCopyCutPaste {
+public:
+    static void Delete(){
+        cout<<"Choose line, index and number of symbols: \n";
+        int line;
+        int index;
+        int numberOfSymbols;
+        cin>>line>>index>>numberOfSymbols;
+
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
+        techFile = fopen("file.txt", "r");
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+        fclose(techFile);
+
+        int lineCounter = 0;
+        int indexCounter = 0;
+        int counter1 = 0;
+
+        while (fileContent[counter1] != '\0') {
+            if (lineCounter == line && indexCounter == index) {
+                break;
+            }
+            if (fileContent[counter1] == '\n') {
+                lineCounter++;
+                indexCounter = 0;
+            } else {
+                indexCounter++;
+            }
+            counter1++;
+        }
+
+        int newFileSize = fileSize - numberOfSymbols;
+        char *newFileContent = (char *) malloc((newFileSize + 1) * sizeof(char));
+        int counter2 = 0;
+        for (int i = 0; i < counter1; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        for (int i = counter1 + numberOfSymbols; i < fileSize; i++) {
+            newFileContent[counter2] = fileContent[i];
+            counter2++;
+        }
+        newFileContent[newFileSize] = '\0';
+
+        techFile = fopen("file.txt", "w");
+        fputs(newFileContent, techFile);
+        fclose(techFile);
+
+        free(fileContent);
+        free(newFileContent);
+    }
+
+    static void Copy(){
+        cout<<"Enter the line, index and number of symbols to copy: \n";
+        int line;
+        int index;
+        int numberOfSymbols;
+        cin>>line>>index>>numberOfSymbols;
+
+    }
+
+    static void Cut(){
+        cout<<"Enter the line, index and number of symbols to cut: \n";
+        int line;
+        int index;
+        int numberOfSymbols;
+        cin>>line>>index>>numberOfSymbols;
+
+    }
+
+    static void Paste(){
+        cout<<"Enter the line and index to paste: \n";
+        int line;
+        int index;
+        cin>>line>>index;
+
+    }
+};
+
+char *fileArray[3] = {"file.txt", "file2.txt", "file3.txt"};
+int filesCounter = 0;
 
 int main()
 {
@@ -149,16 +235,16 @@ int main()
                 Search();
                 break;
             case 8:
-                Delete();
+                DeleteCopyCutPaste::Delete();
                 break;
             case 9:
-                Copy();
+                DeleteCopyCutPaste::Copy();
                 break;
             case 10:
-                Cut();
+                DeleteCopyCutPaste::Cut();
                 break;
             case 11:
-                Paste();
+                DeleteCopyCutPaste::Paste();
                 break;
             case 12:
                 Undo();
