@@ -1,6 +1,8 @@
 #include <iostream>
 using namespace std;
 
+char* globalCopiedText = nullptr;
+
 void InsertText();
 void Search();
 void Undo();
@@ -154,16 +156,65 @@ public:
     }
 
     static void Copy(){
-        cout<<"Enter the line, index and number of symbols to copy: \n";
+        cout<<"Choose line, index and number of symbols: \n";
         int line;
         int index;
         int numberOfSymbols;
         cin>>line>>index>>numberOfSymbols;
 
+        techFile = fopen("file.txt", "r");
+        long fileSize = 0;
+        char symbol;
+        while ((symbol = fgetc(techFile)) != EOF) {
+            fileSize++;
+        }
+        fclose(techFile);
+
+        char *fileContent = (char *) malloc((fileSize + 1) * sizeof(char));
+        techFile = fopen("file.txt", "r");
+        fread(fileContent, 1, fileSize, techFile);
+        fileContent[fileSize] = '\0';
+        fclose(techFile);
+
+        int lineCounter = 0;
+        int indexCounter = 0;
+        int counter1 = 0;
+
+        while (fileContent[counter1] != '\0') {
+            if (lineCounter == line && indexCounter == index) {
+                break;
+            }
+            if (fileContent[counter1] == '\n') {
+                lineCounter++;
+                indexCounter = 0;
+            } else {
+                indexCounter++;
+            }
+            counter1++;
+        }
+
+        char *copiedText = (char *) malloc((numberOfSymbols + 1) * sizeof(char));
+        int counter2 = 0;
+        for (int i = counter1; i < counter1 + numberOfSymbols; i++) {
+            copiedText[counter2] = fileContent[i];
+            counter2++;
+        }
+        copiedText[numberOfSymbols] = '\0';
+
+        if (globalCopiedText != nullptr) {
+            free(globalCopiedText);
+            globalCopiedText = nullptr;
+        }
+
+        globalCopiedText = (char *) realloc(globalCopiedText, strlen(copiedText) + 1);
+        strcpy(globalCopiedText, copiedText);
+
+        free(fileContent);
+        free(copiedText);
     }
 
     static void Cut(){
-        cout<<"Enter the line, index and number of symbols to cut: \n";
+        cout<<"Choose line, index and number of symbols: \n";
         int line;
         int index;
         int numberOfSymbols;
@@ -179,9 +230,6 @@ public:
 
     }
 };
-
-char *fileArray[3] = {"file.txt", "file2.txt", "file3.txt"};
-int filesCounter = 0;
 
 int main()
 {
@@ -256,6 +304,8 @@ int main()
                 Replace();
                 break;
             case 15:
+                free(globalCopiedText);
+                globalCopiedText = nullptr;
                 return 0;
             default:
                 cout<<"The command is not implemented\n";
@@ -385,4 +435,14 @@ void Search() {
     free(fileContent);
     free(lineBuffer);
     fclose(techFile);
+}
+
+void Redo() {
+    cout<<"Redo\n";
+}
+void Undo() {
+    cout<<"Undo\n";
+}
+void Replace() {
+    cout<<"Replace\n";
 }
