@@ -1,9 +1,12 @@
 #include <iostream>
 using namespace std;
 
+void RewriteFile();
+int Menu(int optionNumber);
+
 char *globalCopiedText = nullptr;
-char *techFilesForSave [3] = {"file1.txt", "file2.txt", "file3.txt"};
-int functions [3] = {0, 0, 0};
+char *techFilesForSave [4] = {"file1.txt", "file2.txt", "file3.txt", "file4.txt"};
+int functions [4] = {0, 0, 0, 0};
 int currentFileIndex = 0;
 
 FILE *techFile;
@@ -37,13 +40,13 @@ public:
     }
 
     static void CurrentText() {
-        techFile = fopen("file.txt", "r");
+        techSaveFile = fopen(techFilesForSave[currentFileIndex], "r");
         char c;
-        while ((c = getc(techFile)) != EOF) {
+        while ((c = getc(techSaveFile)) != EOF) {
             cout<<c;
         }
         cout<<endl;
-        fclose(techFile);
+        fclose(techSaveFile);
     }
 
 };
@@ -553,13 +556,16 @@ public:
     static void Undo() {
         int index;
         if (currentFileIndex == 0){
-            index = 1;
+            index = 2;
         }
         else if (currentFileIndex == 1){
-            index = 2;
+            index = 3;
         }
         else if (currentFileIndex == 2){
             index = 0;
+        }
+        else if (currentFileIndex == 3){
+            index = 1;
         }
 
         techFile = fopen("file.txt", "w");
@@ -573,7 +579,21 @@ public:
     }
 
     static void Redo() {
-
+        if (currentFileIndex == 0){
+            Menu(functions[1]);
+            Menu(functions[2]);
+            Menu(functions[3]);
+        }
+        else if (currentFileIndex == 1){
+            Menu(functions[2]);
+            Menu(functions[3]);
+            Menu(functions[0]);
+        }
+        else if (currentFileIndex == 2){
+            Menu(functions[3]);
+            Menu(functions[0]);
+            Menu(functions[1]);
+        }
     }
 
 };
@@ -589,12 +609,115 @@ void RewriteFile() {
     fclose(techSaveFile);
 }
 
+int Menu(int optionNumber){
+    if (currentFileIndex == 4){
+        currentFileIndex = 0;
+    }
+    switch (optionNumber) {
+        case 1:
+            RewriteFile();
+            Append::AppendText();
+            functions[currentFileIndex] = optionNumber;
+            currentFileIndex++;
+            break;
+        case 2:
+            RewriteFile();
+            Append::NewLine();
+            functions[currentFileIndex] = optionNumber;
+            currentFileIndex++;
+            break;
+        case 3:
+            SaveLoad::SaveTo();
+            RewriteFile();
+            break;
+        case 4:
+            SaveLoad::LoadFrom();
+            RewriteFile();
+            break;
+        case 5:
+            RewriteFile();
+            Append::CurrentText();
+            functions[currentFileIndex] = optionNumber;
+            currentFileIndex++;
+            break;
+        case 6:
+            InsertReplaceSearch::InsertText();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 7:
+            InsertReplaceSearch::Search();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 8:
+            DeleteCopyCutPaste::Delete();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 9:
+            DeleteCopyCutPaste::Copy();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 10:
+            DeleteCopyCutPaste::Cut();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 11:
+            DeleteCopyCutPaste::Paste();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 12:
+            RewriteFile();
+            UndoRedo::Undo();
+            functions[currentFileIndex] = optionNumber;
+            currentFileIndex++;
+            break;
+        case 13:
+            RewriteFile();
+            UndoRedo::Redo();
+            functions[currentFileIndex] = optionNumber;
+            currentFileIndex++;
+            break;
+        case 14:
+            InsertReplaceSearch::Replace();
+            functions[currentFileIndex] = optionNumber;
+            RewriteFile();
+            currentFileIndex++;
+            break;
+        case 15:
+            free(globalCopiedText);
+            globalCopiedText = nullptr;
+            return 0;
+        default:
+            cout<<"The command is not implemented\n";
+            break;
+    }
+}
+
 int main()
 {
     cout<<"Hello, World!\n";
 
     techFile = fopen("file.txt", "w");
     fclose(techFile);
+    techSaveFile = fopen("file1.txt", "w");
+    fclose(techSaveFile);
+    techSaveFile = fopen("file2.txt", "w");
+    fclose(techSaveFile);
+    techSaveFile = fopen("file3.txt", "w");
+    fclose(techSaveFile);
+    techSaveFile = fopen("file4.txt", "w");
+    fclose(techSaveFile);
 
     cout<<"1 - Append text symbols to the end \n"
         <<"2 - Start the new line \n"
@@ -617,86 +740,8 @@ int main()
     while (true) {
         cout<<"Please, choose the command\n";
         cin>>optionNumber;
-
-        if (currentFileIndex == 3){
-            currentFileIndex = 0;
-        }
-        RewriteFile();
-
-        switch (optionNumber) {
-            case 1:
-                Append::AppendText();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 2:
-                Append::NewLine();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 3:
-                SaveLoad::SaveTo();
-                break;
-            case 4:
-                SaveLoad::LoadFrom();
-                break;
-            case 5:
-                Append::CurrentText();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 6:
-                InsertReplaceSearch::InsertText();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 7:
-                InsertReplaceSearch::Search();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 8:
-                DeleteCopyCutPaste::Delete();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 9:
-                DeleteCopyCutPaste::Copy();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 10:
-                DeleteCopyCutPaste::Cut();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 11:
-                DeleteCopyCutPaste::Paste();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 12:
-                UndoRedo::Undo();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 13:
-                UndoRedo::Redo();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 14:
-                InsertReplaceSearch::Replace();
-                functions[currentFileIndex] = optionNumber;
-                currentFileIndex++;
-                break;
-            case 15:
-                free(globalCopiedText);
-                globalCopiedText = nullptr;
-                return 0;
-            default:
-                cout<<"The command is not implemented\n";
-                break;
+        if (Menu(optionNumber) == 0){
+            break;
         }
     }
     return 0;
